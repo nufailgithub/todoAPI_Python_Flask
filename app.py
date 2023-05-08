@@ -38,6 +38,45 @@ def login():
     else:
         return make_response('Could not verify!', 401, {"WWW-Authenticate": 'Basic realm="Login Required'})
 
+
+"""
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.authorization.username
+    password = request.authorization.password
+
+    if password == 'password':
+        token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
+        return make_response(jsonify({'token': token.decode('UTF-8')}), 200)
+    else:
+        return make_response(jsonify({'message': 'Could not verify!'}), 401, {"WWW-Authenticate": 'Basic realm="Login Required"'})
+
+
+@app.route('/todos', methods=['POST'])
+def create_todo():
+    token = request.headers.get('Authorization')
+    if not token:
+        return make_response(jsonify({'message': 'Missing token'}), 401)
+
+    try:
+        token = token.split(' ')[1]
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+        if 'username' not in data:
+            return make_response(jsonify({'message': 'Invalid token'}), 401)
+    except:
+        return make_response(jsonify({'message': 'Invalid token'}), 401)
+
+    if not request.json or not 'title' in request.json:
+        return make_response(jsonify({'message': 'Missing title'}), 400)
+
+    new_todo = Todo(title=request.json['title'], complete=False)
+    db.session.add(new_todo)
+    db.session.commit()
+
+    return make_response(jsonify({'message': 'New todo created!'}), 201)
+
+
+"""
 @app.route('/todos', methods=['GET'])
 def get_todos():
     todos = Todo.query.all()
