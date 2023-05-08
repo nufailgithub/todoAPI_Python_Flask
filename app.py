@@ -13,13 +13,19 @@ class Todo(db.Model):
     complete = db.Column(db.Boolean, default=False)
 
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True)
+    password = db.Column(db.String(10))
+
+
 @app.route('/login')
 def login():
     auth = request.authorization
 
-    if auth and auth.password == 'secret':
+    if auth.password == 'secret':
         return
-    return make_response('Could not verify!', 401,{'WWW-Authenticate' :'Basic realm="Login Required'})
+    return make_response('Could not verify!', 401, {"WWW-Authenticate": 'Basic realm="Login Required'})
 
 
 @app.route('/task', methods=['POST'])
@@ -34,9 +40,18 @@ def create_task():
     return make_response(jsonify("New task is created!"), 200)
 
 
-@app.route('/about')
-def about():
-    return '<h1>About page</h1>'
+@app.route('/todos', methods=['GET'])
+def get_todos():
+    todos = Todo.query.all()
+    result = []
+    for todo in todos:
+        result.append({
+            'id': todo.id,
+            'title': todo.title,
+            'complete': todo.complete,
+        })
+    return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
