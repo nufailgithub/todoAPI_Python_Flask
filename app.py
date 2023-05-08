@@ -1,13 +1,15 @@
-from flask import Flask, render_template,jsonify, request, make_response
+from flask import Flask,jsonify, request, make_response
 from flask_sqlalchemy import SQLAlchemy
+import os
 import jwt
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+ os.path.join(app.root_path,'todos.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 db = SQLAlchemy(app)
 
 
-#CREATE MODEL
+#CREATE DATABASE AND TABLE
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
