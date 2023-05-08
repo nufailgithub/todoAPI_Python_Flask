@@ -6,25 +6,19 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 db = SQLAlchemy(app)
 
+
 #CREATE MODEL
 class Todo(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     complete = db.Column(db.Boolean, default=False)
 
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True)
-    password = db.Column(db.String(10))
-
-
-@app.route('/login')
+@app.route('/')
 def login():
     auth = request.authorization
 
-    if auth.password == 'secret':
-        return
+    if auth.password == 'password':
+        return "You are logged in"
     return make_response('Could not verify!', 401, {"WWW-Authenticate": 'Basic realm="Login Required'})
 
 
@@ -32,7 +26,7 @@ def login():
 def create_task():
     data = request.get_json()
 
-    new_task = Task(name=data['name'], content=data['content'], complete=False)
+    new_task = Task(id=data['id'], title=data['title'], complete=False)
 
     db.session.add(new_task)
     db.session.commit()
